@@ -1,10 +1,12 @@
+#加载包
 library(pastecs)
 library(ggplot2)
-library(DescTools)
-library(magrittr)
-library(qqman)
-library(grDevices) 
+library(DescTools)#描述性统计
+library(magrittr)#管道操作
+library(qqman)#qq图
+library(grDevices)#3d颜色
 library(shape)
+library(MSG)#画调和曲线
 #----3.1-----
 data.3_1<-c(74.3,78.8,68.8,78.0,70.4,80.5,80.5,69.7,71.2,73.5,
      79.5,75.6,75.0,78.8,72.0,72.0,72.0,74.3,71.2,72.0,
@@ -22,25 +24,30 @@ Kurt(data.3_1)
 #----3.2-----
 data.3_1.gg <- data.frame(c(1:100),data.3_1)
 colnames(data.3_1.gg) <- c("X","data")
+#直方图
 ggplot(data.3_1.gg,aes(x=data))+
   geom_histogram(binwidth=1,fill=NA, color="black")
+#密度
 ggplot(data.3_1.gg,aes(x=data))+
   geom_density()
+#经验分布
 ggplot(data.3_1.gg,aes(x=data))+
   stat_ecdf()
+#qq图
 ggplot(data.3_1.gg,aes(sample = data))+
   stat_qq() +
   stat_qq_line()
+#密度与norm对比
 ggplot(data.3_1.gg,aes(x=data))+
   geom_density(color = 'red')+
   geom_density(aes(rnorm(100,mean = mean(data.3_1),sd = sd(data.3_1))))
 #----3.3-----
-boxplot(data.3_1)
-stem(data.3_1)
-boxplot(data.3_1)$stats
+boxplot(data.3_1)#箱线图
+stem(data.3_1)#茎叶图
+boxplot(data.3_1)$stats#箱线图返回返回中取出5数概括
 #-----3.4-----
-shapiro.test(data.3_1)
-ks.test(data.3_1,rnorm(100,mean = mean(data.3_1),sd = sd(data.3_1)))
+shapiro.test(data.3_1)#shapiro检验-用于对比norm
+ks.test(data.3_1,rnorm(100,mean = mean(data.3_1),sd = sd(data.3_1)))#ks-test
 #----3.5-----
 #用plot
 x<-c(2,4,3,2,4,7,7,2,2,5,4,5,6,8,5,10,7,12,12,6,6,7,11,6,6,7,9,5,5,10,6,3,10)
@@ -68,6 +75,7 @@ data.3_7 <- read.table("薛毅/统计建模与R代码及答案/3/3.7.txt")
 data.3_7
 colnames(data.3_7) <- c("number","name","sex","age","height","weight")
 attach(data.3_7)
+#coplot()散点图的基础上，加入了一至两个因子，可以做出散点图随因子变化的情况。
 coplot(weight~height|sex,col="blue")
 coplot(weight~height|age,col="black")
 coplot(weight~height|sex+age,col="darkgreen")
@@ -76,9 +84,9 @@ x<-seq(-2,3,0.5)
 y<-seq(-1,7,0.5)
 f<-function(x,y) x^4-2*x^2*y+x^2-2*x*y+2*y^2+4.5*x-4*y+4
 z<-outer(x,y,f)
-persp(x, y, z , theta = 55, phi = 45
+persp(x, y, z , theta = 100, phi = 20
       ,xlab = "X", ylab = "Y", zlab = "Z", 
-      col = drapecol(z) ,ltheta = 120, shade = 0.75, ticktype = "detailed"
+      col = drapecol(z) ,ltheta = 100, shade = 0.85, ticktype = "detailed"
 )
 contour(x,y,z,levels=c(0,1,2,3,4,5,10,15,20,30,40,50,60,80,100),col="blue")
 
@@ -87,7 +95,6 @@ cor.test(weight,height,alternative="two.sided",method="pearson")
 #-----3.10----
 a<-read.table("薛毅/统计建模与R代码及答案/3/3.17.txt")%>%
   data.frame()
-
 stars(a)
 attach(a)
 #1
@@ -101,7 +108,5 @@ G5 <- APP
 b <- cbind(G1,G2,G3,G4,G5)
 stars(b)
 #-----3.11-----
-library(MSG)
 andrews_curve(b)
-
 
